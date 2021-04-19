@@ -152,5 +152,5 @@ object StreamsPG extends App {
 
   println(fibonacci(1, 1).take(100).toList())
 
-  println(eratosthenes(MyStream.from(2)(_ + 1)).take(20).toList())
+  println(eratosthenes(MyStream.from(2)(_ + 1)).take(100).toList())
 }
