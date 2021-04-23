@@ -153,6 +153,7 @@ object Monads extends App {
       def flatten(m: Monad[Monad[T]]): Monad[T] = m.flatMap((x: Monad[T]) => x)
      }
      *
-     * List(1, 2, 3).map(_ * 2) = List(1, 2, 3).flatMap(x => List(
+     * List(1, 2, 3).map(_ * 2) = List(1, 2, 3).flatMap(x => List(x * 2))
+     * List(List(1, 2), List(3, 4)).flatten = List(List(1, 2), List(3, 4)).flatMap(x => x) = List(1, 2, 3, 4)
   * */
 }
