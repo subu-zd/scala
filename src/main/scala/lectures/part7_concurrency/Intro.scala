@@ -187,14 +187,14 @@ object Intro extends App {
     * (main thread)
     *   message = "Scala sucks"
     *   awesomeThread.start()
-    *   sleep() - relives execution
+    *   sleep() - relieves execution
     *
     * (awesome thread)
-    *   sleep() - relives execution
+    *   sleep() - relieves execution
     *
     * (OS gives the CPU to some important thread - takes the CPU for more than 2 seconds)
     *
-    * Now after the important thread has finished running, the OS is very generous and get back to our program
+    * Now after the important thread has finished running, the OS is very generous and gets back to our program
     * but at this point, both the MAIN THREAD and AWESOME THREAD have finished sleeping
     * and the OS is free to choose which thread to run and it decides to give the CPU to the main thread and not the awesomeThread
     *

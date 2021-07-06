@@ -62,7 +62,7 @@ object Recursion extends App {
   def isPrime(n: Int):String = {
     @tailrec
     def helper(i: Int, div: Int): String = {
-      if(div == 1) "Prime"
+      if (div == 1) "Prime"
       else if (i % div == 0) "Not Prime"
       else helper(i, div - 1)
     }
@@ -76,12 +76,13 @@ object Recursion extends App {
   def fibo(n: Int): Int = {
     @tailrec
     def helper(n: Int, a1: Int, a2: Int): Int = {
-      if(n <= 2) a2
+      if (n <= 1) a2
+      else if (n == 2) a1 + a2
       else helper(n - 1, a2, a1 + a2)
     }
 
-    helper(n, 1, 1);
+    helper(n, 1, 0);
   }
 
-  println(fibo(10))
+  println(fibo(4))
 }
