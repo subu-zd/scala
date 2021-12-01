@@ -61,7 +61,7 @@ object ThreadCommunication extends App {
       println("[consumer] waiting ...")
       container.synchronized {
         container.wait()
-        // at the point of waiting the producer thread will release the lock on the container and
+        // at the point of waiting the consumer thread will release the lock on the container and
         // it will suspend until someone else, namely the producer will signal the container that they may continue
       }
 

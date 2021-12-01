@@ -47,7 +47,7 @@ object AbstractDataTypes extends App {
   *
   * 1. unlike abstract classes, traits do not have constructor parameters
   * 2. you can only extend ONE class but you extend MULTIPLE traits (this is how you implement multiple inheritance in Scala)
-  * 3. we choose Traits over an Abstract class is it describes BEHAVIOUR while a class describes a type of THING
+  * 3. we choose Traits over an Abstract class as it describes BEHAVIOUR while a class describes a type of THING
   *
   */
 }

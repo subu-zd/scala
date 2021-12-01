@@ -211,7 +211,7 @@ object Intro extends App {
     * */
 
     // how do we fix this?
-    // synchronizing doesn't work here since it is only useful for CONCURRENT MODIFICATIONS
+    // synchronizing doesn't work here since it is only useful for CONCURRENT MODIFICATIONS (i.e. race condition)
     // the solution is awesomeThread.join() and ensure it is finished before printing
 
 }

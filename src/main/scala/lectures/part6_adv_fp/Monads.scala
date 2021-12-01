@@ -111,7 +111,7 @@ object Monads extends App {
   // now since "value" is a by-name parameter, applying f() will evaluate it eagerly
   // this will evaluate the println() statement in the flatMapInstance
 
-  // fix: we can change the function type and make it receive the parameter by name as well
+  // fix: we can change the function type and make it receive the parameter "by name" as well
   // this will delay the evaluation of value inside f() because f() receives the parameter by name
 
   val flatMapInstance2 = lazyInstance.flatMap(x => Lazy {

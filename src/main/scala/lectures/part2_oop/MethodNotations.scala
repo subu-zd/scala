@@ -1,5 +1,7 @@
 package lectures.part2_oop
 
+import scala.language.postfixOps
+
 object MethodNotations extends App {
   class Person(val name: String, favMovie: String, val age: Int = 0) {
 
@@ -47,11 +49,11 @@ object MethodNotations extends App {
   // it only works with a few operators +, -, ~, !
 
   val x: Int = -1
-  val y: Int = 1.unary_-
+  val y: Int = -(-1)
 
   println(x == y)
   println(!mary)
-  println(mary.unary_!)
+  println(!mary)
 
   // Postfix Notation
   // ONLY functions that do not receive any parameters have the property to be used in a postfix notation
