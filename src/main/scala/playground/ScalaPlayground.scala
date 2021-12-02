@@ -60,18 +60,6 @@ object ScalaPlayground extends App {
   println(instantIsBefore(Some(temp.toInstant), 5400000, ChronoUnit.MILLIS))
   println(Timestamp.from(Instant.now.minus(2, ChronoUnit.HOURS).truncatedTo(ChronoUnit.SECONDS)))
 
-//  def sanitiseEmojis(emojis: EmojiDefinition[]): EmojiDefinition[] {
-//    val retVal: EmojiDefinition[] = [];
-//    emojis.forEach((emoji) => {
-//    if (supportsEmoji(emoji)) {
-//    retVal.push(emoji);
-//  }
-//  });
-//    return retVal;
-//  }
-//
-//  val retVal = emojis.filter(emoji => supportEmoji(emoji))
-
   println(List(1, 1, 1, 5, 5, 5, 2, 3, 4, 5).filter(x => Seq(6, 5).contains(x)))
 
   val timeBool = Timestamp.from(Instant.now.minus(15, ChronoUnit.MINUTES)) <= Timestamp.from(Instant.now.minus(14, ChronoUnit.MINUTES))
