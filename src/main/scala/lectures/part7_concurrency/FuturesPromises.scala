@@ -3,7 +3,7 @@ package lectures.part7_concurrency
 import scala.concurrent.{Await, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Random, Success} // important for Futures. Future's apply method requires implicits as a second argument list
+import scala.util.{Failure, Random, Success, Try} // important for Futures. Future's apply method requires implicits as a second argument list
 // the compiler looks for the "global" val to inject it into the parameter list
 // ExecutionContext essentially handles thread allocation for futures
 import scala.concurrent.Future
@@ -222,4 +222,101 @@ object FuturesPromises extends App {
    *    retryUntil[T](action: () => Future[T], condition: T => Boolean): Future[T]
    * */
 
+  // Q1
+
+  def instantFulfill[T](value: T): Future[T] = {
+    println("Future fulfilled")
+    Future(value)
+  }
+
+  // Q2
+
+  def inSequence[A, B](first: Future[A], second: Future[B]): Future[B] = first.flatMap(_ => second)
+
+  // Q3
+
+  def firstOutOfTwo[A](fa: Future[A], fb: Future[A]): Future[A] = {
+    val promise = Promise[A]
+
+//    def tryComplete(promise: Promise[A], result: Try[A]) = result match {
+//      case Success(r) =>
+//        try {
+//          promise.success(r)
+//        } catch {
+//          case _ =>
+//        }
+//      case Failure(t) =>
+//        try {
+//          promise.failure(t)
+//        } catch {
+//          case _ =>
+//        }
+//    }
+
+//    fa.onComplete(tryComplete(promise, _))
+//    fb.onComplete(tryComplete(promise, _))
+
+    // promise has an in-built tryComplete method with the exact same functionality
+    // the difference is that the in-built method returns a Boolean whether the promise could be completed or not
+    fa.onComplete(promise.tryComplete)
+    fb.onComplete(promise.tryComplete)
+
+    promise.future
+  }
+
+  // Q4
+  // approach:
+  // - 1 promise which both future will try to complete
+  // - 2 promise which the last future will complete
+  def lastOutOfTwo[A](fa: Future[A], fb: Future[A]): Future[A] = {
+    val bothPromise = Promise[A]
+    val lastPromise = Promise[A]
+
+    val checkAndComplete = (result: Try[A]) =>
+      if (!bothPromise.tryComplete(result))
+        lastPromise.complete(result)
+
+    fa.onComplete(checkAndComplete)
+    fb.onComplete(checkAndComplete)
+
+    lastPromise.future
+  }
+
+  val fast = Future {
+    Thread.sleep(100)
+    42
+  }
+
+  val slow = Future {
+    Thread.sleep(200)
+    43
+  }
+
+  firstOutOfTwo(fast, slow).foreach(println)
+  lastOutOfTwo(fast, slow).foreach(println)
+
+  Thread.sleep(1000)
+
+  // Q5
+
+  def retryUntil[A](action: (Int) => Future[A], pred: A => Boolean, acc: Int): Future[A] = {
+    action(acc)
+      .filter(pred)
+      .recoverWith { case _ =>
+        retryUntil(action, pred, acc + 1)
+      }
+  }
+
+  val action = (i: Int) =>
+    Future {
+      println(i)
+      Thread.sleep(500)
+      i
+    }
+
+  val countUntilTen = (i: Int) => i == 10
+
+  retryUntil(action, countUntilTen, 0)
+
+  Thread.sleep(6000)
 }
