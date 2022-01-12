@@ -4,18 +4,19 @@ object PartialFunctions extends App {
   val aFunc = (x: Int) => x + 1 // Function1[Int, Int] === Int => Int
 
   val aFussyFunction = (x: Int) =>
-    if(x == 1) 42
-    else if(x == 2) 56
-    else if(x == 5) 999
+    if (x == 1) 42
+    else if (x == 2) 56
+    else if (x == 5) 999
     else throw new FunctionNotApplicableException
 
   class FunctionNotApplicableException extends RuntimeException
 
-  val aNicerFF = (x: Int) => x match {
-    case 1 => 42
-    case 2 => 56
-    case 5 => 999
-  }
+  val aNicerFF = (x: Int) =>
+    x match {
+      case 1 => 42
+      case 2 => 56
+      case 5 => 999
+    }
   // The above is actually an implementation of Int Subset {1, 2, 5} => Int
   // Hence, this function is also called a PARTIAL FUNCTION (as it only accepts a part of the Int domain as arguments)
 
@@ -40,16 +41,16 @@ object PartialFunctions extends App {
   println(lifted(2))
   println(lifted(98))
 
-  val pfChain = aPartialFunc.orElse[Int, Int] {
-    case 45 => 67
+  val pfChain = aPartialFunc.orElse[Int, Int] { case 45 =>
+    67
   }
 
   println(pfChain(2))
   println(pfChain(45))
 
   // Partial Functions extend Normal Functions
-  val aFunction: Int => Int = {
-    case 1 => 99
+  val aFunction: Int => Int = { case 1 =>
+    99
   }
 
   // HOFs accept partial functions as well
@@ -64,10 +65,10 @@ object PartialFunctions extends App {
   // Note: Unlike functions which can have multiple parameter types, a Partial function can only have one parameter type
 
   /* EXERCISE
-  *
-  * 1. construct a partial function instance (anonymous class)
-  * 2. chat bot as a partial function
-  * */
+   *
+   * 1. construct a partial function instance (anonymous class)
+   * 2. chat bot as a partial function
+   * */
 
   val aManualFF = new PartialFunction[Int, Int] {
     override def apply(v1: Int): Int = v1 match {
@@ -82,10 +83,10 @@ object PartialFunctions extends App {
   }
 
   val chatbot: PartialFunction[String, String] = {
-    case "hello" => "Hi, my name is HAL9000"
-    case "goodbye" => "Once you start talking to me, there is no return, human"
+    case "hello"    => "Hi, my name is HAL9000"
+    case "goodbye"  => "Once you start talking to me, there is no return, human"
     case "call now" => "Unable to find your phone without your credit card"
-    case _ => "Umm! Not sure how to respond to that "
+    case _          => "Umm! Not sure how to respond to that "
   }
 
   scala.io.Source.stdin.getLines().foreach(line => println(s"you said: ${chatbot(line)}"))

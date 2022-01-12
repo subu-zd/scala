@@ -1,7 +1,8 @@
 package playground
 
 import java.sql.Timestamp
-import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.{Instant, LocalDateTime}
 import java.time.temporal.ChronoUnit
 import scala.math.Ordered.orderingToOrdered
 
@@ -34,11 +35,11 @@ object ScalaPlayground extends App {
 
   List(1, 2, 3).map(_ * 2)
 
-  val oddNumbers :List[Int] = List(1,3,5,7,9,11,13)
+  val oddNumbers: List[Int] = List(1, 3, 5, 7, 9, 11, 13)
 
 //  def reduce[A1 >: Int](op: (A1, A1) => A1): A1
 
-  def additionReduce(number1: Int, number2: Int) : Int = {
+  def additionReduce(number1: Int, number2: Int): Int = {
     number1 + number2
   }
 
@@ -51,7 +52,7 @@ object ScalaPlayground extends App {
       // check if the execution is finished more than X minutes ago
       // to make sure all λ functions triggered by that execution are finished as well
       case Some(stopDate) => stopDate.isBefore(threshold)
-      case None => false
+      case None           => false
     }
   }
 
@@ -76,6 +77,11 @@ object ScalaPlayground extends App {
   println(testOpt2.map(_.resourceMultiplier).getOrElse(1))
   println(testOpt2.map(_.category).getOrElse("XS4"))
 
-
   println(List(1, 1, 1, 5, 5, 5, 2, 3, 4, 5).flatMap(a => List(a * 2)))
+
+//  val str: String = "2021-12-07 08:03:12.3278569"
+//  val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SX")
+//  val testTime = LocalDateTime.parse(str, dtf)
+//  println(testTime)
+  println(LocalDateTime.now.toLocalDate)
 }
