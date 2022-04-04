@@ -84,4 +84,71 @@ object ScalaPlayground extends App {
 //  val testTime = LocalDateTime.parse(str, dtf)
 //  println(testTime)
   println(LocalDateTime.now.toLocalDate)
+
+  val cancelReloadList = Seq(
+    (1, "abc", "def", true),
+    (1, "abc", "def", true),
+    (1, "abc", "def", true),
+    (1, "abc", "def", true),
+    (1, "abc", "def", true)
+  )
+//    .map(a => (a._1, s"\"${ a._2 }\"", s"\"${ a._3 }\"", true))
+
+  val tryOpt: Option[Int] = Some(1234)
+  val tryOpt2: Option[Int] = None
+
+  println(cancelReloadList.map(a => (a._1, s"\'${a._2}\'", s"\'${a._3}\'", true)).mkString(", "))
+
+  println(tryOpt.getOrElse("").toString)
+  println(tryOpt2.getOrElse("").toString)
+
+  println(LocalDateTime.now.toString.substring(0, 19).replace("T", " "))
+
+  println(123123123123L)
+
+  val taskAccountCountMap = Map(
+    "CacheLoad" -> 1,
+    "SellLoad" -> 5
+  )
+
+  println(taskAccountCountMap.getOrElse("CacheLoad", 0))
+  println(taskAccountCountMap.getOrElse("Cache", 0))
+
+  println(taskAccountCountMap.get(""))
+
+  println(cancelReloadList.map(_._1))
+
+  println(List(1, 2, 3) ::: List(4, 5, 6))
+
+  println(oddNumbers.mkString(", "))
+
+  val sampleKVTupleList = List(
+    (1234, "shard9"),
+    (134685, "shard8"),
+    (1234, "shard2"),
+    (12937, "rscluster2")
+  )
+
+  val emptyList: List[(Long, String)] = List()
+
+  println(emptyList.groupBy(_._1).view.mapValues(_.map(_._2)).toMap)
+
+  println(List(1, 2).mkString(","))
+
+  val accountsStringList = if (List().isEmpty) "0" else oddNumbers.mkString(", ")
+
+  val query =
+    s"""
+       |SELECT j.account_id,
+       |(CASE
+       |WHEN l.location_type='Postgres' THEN l.postgres_cluster
+       |WHEN l.location_type='Redshift' THEN l.redshift_cluster
+       |END) AS datastore
+       |FROM jobs j JOIN locations l ON j.write_location_id = l.id
+       |WHERE j.account_id IN ($accountsStringList)
+       |GROUP BY j.account_id, l.location_type, l.postgres_cluster, l.redshift_cluster;
+       """.stripMargin
+
+  println(query)
+
 }

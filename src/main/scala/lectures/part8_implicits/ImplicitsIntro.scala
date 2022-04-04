@@ -27,7 +27,7 @@ object ImplicitsIntro extends App {
 
   /* In the above println statement, the String class doesn't natively have a "greet" method
    * but the compiler looks for all implicit classes, objects, values and methods that can help in the compilation
-   * i.e. it looks for anything that cant urn this string into something that has a greet method
+   * i.e. it looks for anything that cant turn this string into something that has a greet method
    *
    * it just so happens that there is a person type that has a "greet" method and
    * an implicit conversion from a string to the type "Person" which has a "greet" method
@@ -53,7 +53,7 @@ object ImplicitsIntro extends App {
   implicit val defaultAmount = 10
 
   println(increment(2)) // the defaultAmount will be implicitly passed by the compiler as the second parameter list
-  // we also override the implicit arg and use the second parameter list if desired
+  // we can also override the implicit arg and use the second parameter list if desired
   // NOTE: this is NOT the same thing as default arguments because the default value is FOUND BY THE COMPILER from the its SEARCH SCOPE.
   // the above example is how FUTURES were constructed with an implicit parameter list
 }
