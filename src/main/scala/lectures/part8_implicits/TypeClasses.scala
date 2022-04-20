@@ -77,13 +77,13 @@ object TypeClasses extends App {
    * */
 
   // type class template
-  trait MyTypeClassTemplate[T] {
-    def action(value: T): String
-  }
-
-  object MyTypeClassTemplate {
-    def apply[T](implicit instance: MyTypeClassTemplate[T]) = instance
-  }
+//  trait MyTypeClassTemplate[T] {
+//    def action(value: T): String
+//  }
+//
+//  object MyTypeClassTemplate {
+//    def apply[T](implicit instance: MyTypeClassTemplate[T]) = instance
+//  }
 
   /* Equality
    * - it has a method equals which compares two values
@@ -123,24 +123,25 @@ object TypeClasses extends App {
   /* Exercise
    * implement the TC pattern for the equality type class */
 
-  trait Equality[T] {
-    def apply(a: T, b: T): Boolean
-  }
+//  trait Equality[T] {
+//    def apply(a: T, b: T): Boolean
+//  }
+//
+//  object Equality {
+//    def apply[T](a: T, b: T)(implicit equality: Equality[T]): Boolean = equality.equals(a, b)
+//  }
+//
+//  implicit object NameEquality extends Equality[User] {
+//    override def apply(a: User, b: User): Boolean = a.name == b.name
+//  }
+//
+//  object NameEmailEquality extends Equality[User] {
+//    override def apply(a: User, b: User): Boolean = a.name == b.name && a.email == b.email
+//  }
 
-  object Equality {
-    def apply[T](a: T, b: T)(implicit equality: Equality[T]): Boolean = equality.equals(a, b)
-  }
+//  val anotherJohn = User("John", 45, "john@gmail.com")
+//  println(Equality.equals(john, anotherJohn))
 
-  implicit object NameEquality extends Equality[User] {
-    override def apply(a: User, b: User): Boolean = a.name == b.name
-  }
-
-  object NameEmailEquality extends Equality[User] {
-    override def apply(a: User, b: User): Boolean = a.name == b.name && a.email == b.email
-  }
-
-  val anotherJohn = User("John", 45, "john@gmail.com")
-  println(Equality.equals(john, anotherJohn))
   // AD-HOC polymorphism
   // We achieve polymorphism in the sense that if two distinct or potentially unrelated types have equalizers implemented,
   // then we can call this equal functionality on them regardless of their types
@@ -151,4 +152,51 @@ object TypeClasses extends App {
   // This is polymorphism because depending on the actual type of the values being compared,
   // the compiler takes case to fetch the correct type class instances for our types
 
+  // part 3
+  // in the context of type classes, type enrichment will allow us to invoke type classes pattern for any type for which we have an HTML serializing
+  implicit class HTMLEnrichment[T](value: T) {
+    def toHtml(implicit serializer: HTMLSerializer[T]): String = serializer.serialize(value)
+  }
+
+  println(john.toHtml) // println(new HTMLEnrichment[User](john).toHtml(UserSerializer))
+  // https://docs.scala-lang.org/scala3/reference/changed-features/implicit-conversions-spec.html
+
+  /*
+   * - extend to new types
+   * - different implementations for the same type
+   * - super expressive
+   * */
+
+  println(2.toHtml)
+  println(john.toHtml(PartialUserSerializer))
+
+  /*
+   * Type Class parts
+   * - type class itself -> HTMLSerializer[T} {...}
+   * - type class instances (some of which are implicit) -> UserSerializer, IntSerializer
+   * - conversion with implicit classes (which will later allow us to use type class instances as implicit parameters) -> HTMLEnrichment
+   * */
+
+  // Context Bounds
+  def htmlBoilerPlate[T](content: T)(implicit serializer: HTMLSerializer[T]): String =
+    s"<html><body> ${content.toHtml(serializer)} </body></html>"
+
+  def htmlSugar[T: HTMLSerializer](content: T): String =
+    s"<html><body> ${content.toHtml} </body></html>" // here we can't user the explicit serializer
+
+  // This is due to context bound.
+  // "[T : HTMLSerializer]" this is a context bound which is telling the compiler to inject here
+  // an implicit parameter of type HTMLSerializer of Type T
+  // the advantage of context bounding is the super compact method signature
+  // the disadvantage is that we cannot use serializer by name because the compiler injects it
+
+  // implicitly
+  case class Permissions(mask: String)
+  implicit val defaultPermissions: Permissions = Permissions("0744")
+
+  // in some other part of the code
+  val standardPerms = implicitly[Permissions]
+  // until now we used implicit values mostly as implicit parameters in methods, and we only use their APIs inside those methods
+  // but if we do need them in some other part of the code, it makes sense to want to surface them out
+  // the implicit method does exactly that
 }
