@@ -13,11 +13,18 @@ object ScalaPlayground extends App {
     category: String = "XS4"
   )
 
-  val j1 = Job(2)
-  val j2 = Job(8)
-  val j3 = Job(4)
-  val j4 = Job(5)
-  val j5 = Job(5)
+  val j1 = Job(2, "XS4,XS3,XXS,M,L")
+  val j2 = Job(8, "XXS,M,L")
+  val j3 = Job(4, "XL,S,M,L")
+  val j4 = Job(5, "XXS,M,L,XXL")
+  val j5 = Job(5, "S,M,L")
+
+  case class Zob(name: String)
+
+  val z1 = Zob("z1")
+  val z2 = Zob("z2")
+  val z3 = Zob("z3")
+  val z4 = Zob("z4")
 
   val l = List(j1, j2, j3, j4, j5)
   println(l.maxBy(_.resourceMultiplier))
@@ -151,4 +158,60 @@ object ScalaPlayground extends App {
 
   println(query)
 
+  val taskAppMap = Map(
+    z1 -> List(j1, j2, j3),
+    z2 -> List(j2, j5),
+    z3 -> List(j1, j4, j5)
+  )
+
+  println(taskAppMap.values.toList.flatten)
+
+  println(taskAppMap.filter(_._2.contains(3)).keys.mkString(","))
+
+  println(List("a,b", "c", "b,d", "a,c,d").mkString(","))
+
+  val listString = List("a,b", "c", "b,d", "a,c,d").mkString(",").split(",").toSet.toList
+  println(listString)
+
+  println(Seq(123, 245, 357).mkString(","))
+
+  def queryTest(accountIds: Seq[Long], dataLoadTasks: Seq[String]) = {
+    val accountIdValues = accountIds.mkString(",")
+    val dataLoadTaskValues = dataLoadTasks.map(task => s"\'$task\'").mkString(",")
+
+    val query = s"""
+                   |WITH accounts_and_tasks_with_read_locations AS (
+                   |  SELECT distinct(account_id), read_location_id, task FROM jobs
+                   |  INNER JOIN accounts ON accounts.id = jobs.account_id
+                   |  WHERE task::text IN ($dataLoadTaskValues) AND
+                   |  account_id IN ($accountIdValues)
+                   |)
+                   |INSERT INTO reload_requests (account_id, location_id, task)
+                   |SELECT account_id, read_location_id, task
+                   |FROM accounts_and_tasks_with_read_locations;
+       """.stripMargin.trim
+
+    query
+  }
+
+  println(queryTest(Seq(8523972L, 9915403L), Seq("BrandsLoad", "SellDealsLoad")))
+
+  val l2 = Seq(j1, j2, j3, j4, j5)
+  val longList = Seq(123L, 135L, 1355L)
+
+  val categoryString = l2.map(_.category.trim).mkString(",").split(",")
+  val uniqueCategory = categoryString.toSeq.distinct
+
+  println(uniqueCategory.length)
+
+  println(taskAppMap.filter(_._2.contains(j2)).keys.mkString(","))
+
+  val uniqueDataLoadTasks = l2
+    .flatMap { app =>
+      taskAppMap.filter(_._2.contains(app)).keys.toSeq
+    }
+    .map(_.toString)
+    .distinct
+
+  println(uniqueDataLoadTasks)
 }

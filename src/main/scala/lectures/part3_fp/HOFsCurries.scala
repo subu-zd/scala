@@ -21,7 +21,7 @@ object HOFsCurries extends App {
 
   @tailrec
   def nTimes(f: Int => Int, n: Int, x: Int): Int = {
-    if(n <= 0) x
+    if (n <= 0) x
     else nTimes(f, n - 1, f(x))
   }
 
@@ -33,8 +33,8 @@ object HOFsCurries extends App {
   // val y = increment10(1)
 
   def nTimesBetter(f: Int => Int, n: Int): (Int => Int) = {
-    if(n <= 0) (x: Int) => x
-    else (x: Int ) => nTimesBetter(f, n - 1)(f(x))
+    if (n <= 0) (x: Int) => x
+    else (x: Int) => nTimesBetter(f, n - 1)(f(x))
   }
 
   val plus10 = nTimesBetter(plusOne, 10)
@@ -61,53 +61,52 @@ object HOFsCurries extends App {
   // if you want to define smaller functions later, you have to specify their type otherwise the code will not compile
   // Just an FYI: The proper way to handle this is by using Partial Function Applications (advanced subject)
 
-
   println(stdFormat(Math.PI))
   println(preciseFormat(Math.PI))
 
   /*
-  * EXERCISES
-  * 1. Expand MyList
-  *   - forEach method
-  *       - for each element in the list, it does a side effect:
-  *       - it receive a function from (A => Unit) and it will apply this function
-  *       - and this will apply this function to every element of my list
-  *
-  * e.g. [1, 2, 3].forEach(x => println(x)) this will print each element on a new line
-  *
-  *   - sort function ((A, A) => Int)
-  *       - meaning it will be negative if left A is less than right A and positive otherwise
-  *       - this will return another MyList ((A, A) => Int) => MyList
-  *
-  * e.g. [1, 2, 3].sort((x, y) => y - x) // saying that x is less than y if it's actually bigger than y, then this will sort the list in descending order i.e. [3, 2, 1]
-  *
-  *   - zipWith (list, (A, A) => B) => MyList[B]
-  *
-  * e.g. [1, 2, 3].zipWith([4, 5, 6], x * y) => [4, 10, 18]
-  *
-  *   - (curried) fold(start)(function) => a value
-  *
-  * e.g. [1, 2, 3].fold(0)(x + y) => 6
-  *      the list will start to get folded in the sense that you will add the 1st element to 0 and then subsequent elements to the previous value (i.e. 2 to 1, then 3 to 3 (2 + 1) ...)
-  *      and when you have no more elements in the list, then you return the final value
-  *
-  * 2. method to convert functions into curried and uncurried variants
-  *    toCurry(f: (Int, Int) => Int) => (Int => Int => Int)
-  *    fromCurry*f: (Int => Int => Int)) => (Int, Int) => Int
-  *
-  * 3. compose1(f, g) => x => f(g(x))
-  *    compose2(f, g) => x => g(f(x))
-  *
-  * */
+   * EXERCISES
+   * 1. Expand MyList
+   *   - forEach method
+   *       - for each element in the list, it does a side effect:
+   *       - it receive a function from (A => Unit) and it will apply this function
+   *       - and this will apply this function to every element of my list
+   *
+   * e.g. [1, 2, 3].forEach(x => println(x)) this will print each element on a new line
+   *
+   *   - sort function ((A, A) => Int)
+   *       - meaning it will be negative if left A is less than right A and positive otherwise
+   *       - this will return another MyList ((A, A) => Int) => MyList
+   *
+   * e.g. [1, 2, 3].sort((x, y) => y - x) // saying that x is less than y if it's actually bigger than y, then this will sort the list in descending order i.e. [3, 2, 1]
+   *
+   *   - zipWith (list, (A, A) => B) => MyList[B]
+   *
+   * e.g. [1, 2, 3].zipWith([4, 5, 6], x * y) => [4, 10, 18]
+   *
+   *   - (curried) fold(start)(function) => a value
+   *
+   * e.g. [1, 2, 3].fold(0)(x + y) => 6
+   *      the list will start to get folded in the sense that you will add the 1st element to 0 and then subsequent elements to the previous value (i.e. 2 to 1, then 3 to 3 (2 + 1) ...)
+   *      and when you have no more elements in the list, then you return the final value
+   *
+   * 2. method to convert functions into curried and uncurried variants
+   *    toCurry(f: (Int, Int) => Int) => (Int => Int => Int)
+   *    fromCurry*f: (Int => Int => Int)) => (Int, Int) => Int
+   *
+   * 3. compose1(f, g) => x => f(g(x))
+   *    compose2(f, g) => x => g(f(x))
+   *
+   * */
 
   // Q2
 
-  def toCurry(f: (Int, Int) => Int): (Int => Int => Int) = {
-    x => y => f(x, y)
+  def toCurry(f: (Int, Int) => Int): (Int => Int => Int) = { x => y =>
+    f(x, y)
   }
 
-  def fromCurry(f: (Int => Int => Int)): (Int, Int) => Int = {
-    (x, y) => f(x)(y)
+  def fromCurry(f: (Int => Int => Int)): (Int, Int) => Int = { (x, y) =>
+    f(x)(y)
   }
 
   def compose1[A, B, C](f: A => B, g: C => A): C => B =
