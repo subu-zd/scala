@@ -1,7 +1,6 @@
 package playground
 
 import java.sql.Timestamp
-import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime}
 import java.time.temporal.ChronoUnit
 import scala.math.Ordered.orderingToOrdered
