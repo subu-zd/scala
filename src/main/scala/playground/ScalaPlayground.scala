@@ -24,6 +24,10 @@ object ScalaPlayground extends App {
   val z2 = Zob("z2")
   val z3 = Zob("z3")
   val z4 = Zob("z4")
+  val z5 = Zob("z5")
+  val z6 = Zob("z6")
+  val z7 = Zob("z7")
+  val z8 = Zob("z8")
 
   val l = List(j1, j2, j3, j4, j5)
   println(l.maxBy(_.resourceMultiplier))
@@ -174,27 +178,6 @@ object ScalaPlayground extends App {
 
   println(Seq(123, 245, 357).mkString(","))
 
-  def queryTest(accountIds: Seq[Long], dataLoadTasks: Seq[String]) = {
-    val accountIdValues = accountIds.mkString(",")
-    val dataLoadTaskValues = dataLoadTasks.map(task => s"\'$task\'").mkString(",")
-
-    val query = s"""
-                   |WITH accounts_and_tasks_with_read_locations AS (
-                   |  SELECT distinct(account_id), read_location_id, task FROM jobs
-                   |  INNER JOIN accounts ON accounts.id = jobs.account_id
-                   |  WHERE task::text IN ($dataLoadTaskValues) AND
-                   |  account_id IN ($accountIdValues)
-                   |)
-                   |INSERT INTO reload_requests (account_id, location_id, task)
-                   |SELECT account_id, read_location_id, task
-                   |FROM accounts_and_tasks_with_read_locations;
-       """.stripMargin.trim
-
-    query
-  }
-
-  println(queryTest(Seq(8523972L, 9915403L), Seq("BrandsLoad", "SellDealsLoad")))
-
   val l2 = Seq(j1, j2, j3, j4, j5)
   val longList = Seq(123L, 135L, 1355L)
 
@@ -213,4 +196,65 @@ object ScalaPlayground extends App {
     .distinct
 
   println(uniqueDataLoadTasks)
+
+  val smartAppMap1 = Map(
+    z1 -> List(1, 2, 3),
+    z2 -> List(2, 5),
+    z3 -> List(1, 4, 5),
+    z4 -> List(6, 8),
+    z5 -> List(6, 7)
+  )
+
+  val smartAppMap2 = Map(
+    z1 -> List(8, 5),
+    z4 -> List(6, 8),
+    z5 -> List(6, 7),
+    z2 -> List(9)
+  )
+
+  println("smart apps: " + smartAppMap1.filter(_._2.contains(5)).values.flatten.filter(_ != 5))
+
+  def helper(map: Map[Zob, List[Int]], appList: Set[Int], overlapList: Set[Int], coveredList: Set[Int]): Set[Int] = {
+    val coveredAcc = appList ++ coveredList
+    val overlapAcc: Set[Int] = appList
+      .flatMap { app =>
+        map
+          .filter(_._2.contains(app))
+          .values
+          .flatten
+          .filterNot(coveredAcc.contains)
+      }
+
+    println("appList: " + appList + ", overlapAcc: " + overlapAcc + ", overlapList: " + overlapList + ", coveredList: " + coveredList)
+
+    if (overlapAcc.isEmpty) overlapList
+    else helper(map, overlapAcc, overlapList ++ overlapAcc, coveredAcc)
+  }
+
+  println(helper(smartAppMap1, List(1, 2, 3).toSet, Set(), Set()))
+
+  def queryTest(accountIds: Seq[Long] = Seq(), dataLoadTasks: Seq[String]) = {
+    val accountIdFilterQuery =
+      if (accountIds.isEmpty) ""
+      else s"AND account_id IN (${accountIds.mkString(",")})"
+    val dataLoadTaskValues = dataLoadTasks.map(task => s"\'$task\'").mkString(",")
+
+    val query = s"""
+                   |WITH accounts_and_tasks_with_read_locations AS (
+                   |  SELECT distinct(account_id), read_location_id, task FROM jobs
+                   |  INNER JOIN accounts ON accounts.id = jobs.account_id
+                   |  WHERE task::text IN ($dataLoadTaskValues) $accountIdFilterQuery
+                   |)
+                   |INSERT INTO reload_requests (account_id, location_id, task)
+                   |SELECT account_id, read_location_id, task
+                   |FROM accounts_and_tasks_with_read_locations;
+       """.stripMargin.trim
+
+    query
+  }
+
+  println(queryTest(Seq(8523972L, 9915403L), Seq("BrandsLoad", "SellDealsLoad")))
+  println(queryTest(dataLoadTasks = Seq("BrandsLoad", "SellDealsLoad")))
+
+  println(l.sortBy(_.resourceMultiplier)(Ordering[Int].reverse))
 }

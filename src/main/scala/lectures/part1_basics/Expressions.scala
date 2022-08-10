@@ -25,7 +25,7 @@ object Expressions extends App {
   // IF-ELSE in Scala is an expression as it always computes a value
 
   val aCondition = true
-  val aConditionValue = if(aCondition) 5 else 3
+  val aConditionValue = if (aCondition) 5 else 3
 
   println(aConditionValue)
 
@@ -42,7 +42,6 @@ object Expressions extends App {
 //  }
   // NEVER WRITE THIS AGAIN. Avoid any type of loops!
 
-
   val aWeirdValue: Unit = (x = 3) // the data type of aWeirdValue is Unit. Unit == Void. It doesn't return anything meaningful
   println(aWeirdValue) // return '()' i.e. empty brackets. This is the only value the 'unit' type can hold
   // side-effects in Scala are actually expressions that return 'unit'
@@ -56,12 +55,10 @@ object Expressions extends App {
     // values declared inside the code block are local to the code block and cannot be accessed outside
     val y = 2
     val z = y + 1
-    if(z > 2) "hello" else "goodbye"
+    if (z > 2) "hello" else "goodbye"
   }
 
   println(codeBlock)
   // a code block is also an expression
   // the value of the block is the value of the last expression inside the block
-
-
 }
